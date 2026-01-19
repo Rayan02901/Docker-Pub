@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  crypto-microservice:
+    build: .
+    container_name: crypto-microservice
+    env_file:
+      - .env.prod
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
