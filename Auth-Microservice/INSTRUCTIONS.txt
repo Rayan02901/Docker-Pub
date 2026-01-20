@@ -1,0 +1,137 @@
+================================================================================
+                    PRODUCTION RUN INSTRUCTIONS
+================================================================================
+
+
+1. OVERVIEW
+--------------------------------------------------------------------------------
+This document explains how to run the Auth Microservice in a production-like
+environment using Docker and Docker Compose.
+
+The service is built using ASP.NET Core and uses JWT-based authentication.
+A published build output is used inside the Docker container to simulate
+real-world deployment practices.
+
+
+2. PREREQUISITES
+--------------------------------------------------------------------------------
+Ensure the following are installed on your system:
+
+- Docker
+- Docker Compose
+- .NET SDK (only required for publishing, not for running containers)
+- Git
+
+
+3. FOLDER STRUCTURE
+--------------------------------------------------------------------------------
+prod/
+└── auth-microservice/
+    ├── Dockerfile
+    ├── docker-compose.yml
+    ├── appsettings.json
+    ├── build/
+    │   ├── Auth-Microservice.dll
+    │   ├── Auth-Microservice.runtimeconfig.json
+    │   ├── appsettings.json
+    │   └── other published binaries
+    └── INSTRUCTIONS.txt
+
+
+4. PUBLISHING THE APPLICATION
+--------------------------------------------------------------------------------
+The Auth Microservice must be published before building the Docker image.
+
+Option 1: Publish using Visual Studio (Recommended)
+---------------------------------------------------
+1. Open the solution in Visual Studio
+2. Right-click the project → Publish
+3. Select "Folder" as the publish target
+4. Set the output path to:
+
+    prod/auth-microservice/build/
+
+5. Click Publish
+
+
+Option 2: Publish using .NET CLI
+--------------------------------
+From the project root directory, run:
+
+    dotnet publish -c Release -o prod/auth-microservice/build
+
+
+5. STEPS TO RUN THE APPLICATION
+--------------------------------------------------------------------------------
+
+Step 1:
+Open a terminal (Command Prompt / PowerShell / Terminal).
+
+Step 2:
+Navigate to the production directory:
+
+    cd Security-Microservice\prod\auth-microservice
+
+Step 3:
+Build and start the service:
+
+    docker-compose up --build
+
+
+6. APPLICATION ACCESS
+--------------------------------------------------------------------------------
+Once the container is running:
+
+- API Base URL:
+  http://localhost:8001
+
+- Swagger UI (API Documentation):
+  http://localhost:8001/swagger
+
+
+7. STOPPING THE SERVICE
+--------------------------------------------------------------------------------
+To stop the running container:
+
+Option 1:
+Press CTRL + C in the running terminal
+
+Option 2:
+Run the following command from the same directory:
+
+    docker-compose down
+
+
+8. ENVIRONMENT CONFIGURATION
+--------------------------------------------------------------------------------
+The application uses `appsettings.json` for configuration.
+
+For production environments:
+- Secrets must NOT be hardcoded
+- Sensitive values should be injected using environment variables
+- Docker Compose can override configuration values at runtime
+
+
+9. REQUIRED CONFIGURATION VALUES
+--------------------------------------------------------------------------------
+Ensure the following values are configured correctly:
+
+    JwtSettings:Secret
+    JwtSettings:Issuer
+    JwtSettings:Audience
+    JwtSettings:ExpiryMinutes
+
+    Logging:LogLevel:Default
+
+
+10. IMPORTANT NOTES
+--------------------------------------------------------------------------------
+- The container uses a published build (no SDK inside runtime image)
+- The build folder MUST exist before running Docker
+- Do NOT commit secrets or production keys
+- Unit tests are NOT executed inside the production container
+- Swagger is enabled for verification purposes only
+- This setup follows real-world ASP.NET Core deployment patterns
+
+
+================================================================================
